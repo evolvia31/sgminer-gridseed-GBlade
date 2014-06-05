@@ -49,8 +49,8 @@ typedef struct s_gridseed_info {
 	enum sub_ident	ident;
 	uint32_t	fw_version;
 	struct timeval	scanhash_time;
-	int		nonce_count[8];  // per chip
-	int		error_count[8];  // per chip
+	int		nonce_count[GRIDSEED_MAX_CHIPS];  // per chip
+	int		error_count[GRIDSEED_MAX_CHIPS];  // per chip
 	char		*serial;
 	// options
 	int		baud;
@@ -441,7 +441,7 @@ another:
 	}
 	else if (strcasecmp(p, "chips")==0) {
 		info->chips = (tmp != 0) ? tmp : info->chips;
-		info->chips = MAX(0, MIN(8, info->chips));
+		info->chips = MAX(0, MIN(GRIDSEED_MAX_CHIPS, info->chips));
 	}
 	else if (strcasecmp(p, "voltage")==0) {
 		info->voltage = (tmp != 0) ? tmp : info->voltage;
@@ -523,6 +523,46 @@ next:
         memcpy(info->freq_cmd, bin_frequency[freq_idx], 8);
 
         return true;
+}
+
+static bool get_chips(GRIDSEED_INFO *info, char *options)
+{
+	char *ss, *p, *end, *comma, *colon;
+	int tmp;
+
+	if (options == NULL)
+		return false;
+
+	applog(LOG_NOTICE, "GridSeed chips options: '%s'", options);
+	ss = strdup(options);
+	p  = ss;
+	end = p + strlen(p);
+
+another:
+	comma = strchr(p, ',');
+	if (comma != NULL)
+		*comma = '\0';
+	colon = strchr(p, '=');
+	if (colon == NULL)
+		goto next;
+	*colon = '\0';
+
+	tmp = atoi(colon+1);
+	if (strcasecmp(p, info->serial)==0) {
+		applog(LOG_NOTICE, "%s unique chips: %i", p, tmp);
+		info->chips = (tmp != 0) ? tmp : info->chips;
+		info->chips = MAX(0, MIN(GRIDSEED_MAX_CHIPS, info->chips));
+	}
+
+next:
+	if (comma != NULL) {
+		p = comma + 1;
+		if (p < end)
+			goto another;
+	}
+	free(ss);
+
+	return true;
 }
 
 static int gridseed_cp210x_init(struct cgpu_info *gridseed, int interface)
@@ -736,6 +776,7 @@ static bool gridseed_detect_one(libusb_device *dev, struct usb_find_devices *fou
 
 	get_options(info, opt_gridseed_options);
 	get_freq(info, opt_gridseed_freq);
+	get_chips(info, opt_gridseed_chips);
 
 	update_usb_stats(gridseed);
 
