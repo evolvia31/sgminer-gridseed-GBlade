@@ -132,6 +132,7 @@ int zombie_devs;
 static int most_devices;
 struct cgpu_info **devices;
 bool have_opencl;
+bool have_gridseed = false;
 int mining_threads;
 
 #ifdef HAVE_CURSES
@@ -2388,8 +2389,8 @@ static void curses_print_status(void)
 	mvwhline(statuswin, ++line, 0, '-', 80);
 	mvwhline(statuswin, statusy - 1, 0, '-', 80);
 
-	cg_mvwprintw(statuswin, devcursor - 1, 0, "[P]ool management %s[S]ettings [D]isplay options [Q]uit",
-		have_opencl ? "[G]PU management " : "");
+	cg_mvwprintw(statuswin, ++line, 0, "[P]ool management %s%s[S]ettings [D]isplay options [Q]uit",
+		have_opencl ? "[G]PU management " : "", have_gridseed ? "G[r]idseed management " : "");
 }
 
 static void adj_width(int var, int *length)
@@ -5159,6 +5160,8 @@ static void *input_thread(void __maybe_unused *userdata)
 			display_pools();
 		else if (!strncasecmp(&input, "s", 1))
 			set_options();
+		else if (have_gridseed && !strncasecmp(&input, "r", 1))
+			manage_gridseed();
 		else if (have_opencl && !strncasecmp(&input, "g", 1))
 			manage_gpu();
 		if (opt_realquiet) {
@@ -8506,10 +8509,12 @@ int main(int argc, char *argv[])
 #endif
 	}
 
-	if (!getenv("GPU_MAX_ALLOC_PERCENT"))
-		applog(LOG_WARNING, "WARNING: GPU_MAX_ALLOC_PERCENT is not specified!");
-	if (!getenv("GPU_USE_SYNC_OBJECTS"))
-		applog(LOG_WARNING, "WARNING: GPU_USE_SYNC_OBJECTS is not specified!");
+	if (!opt_nogpu) {
+		if (!getenv("GPU_MAX_ALLOC_PERCENT"))
+			applog(LOG_WARNING, "WARNING: GPU_MAX_ALLOC_PERCENT is not specified!");
+		if (!getenv("GPU_USE_SYNC_OBJECTS"))
+			applog(LOG_WARNING, "WARNING: GPU_USE_SYNC_OBJECTS is not specified!");
+	}
 
 	if (!total_pools) {
 		applog(LOG_WARNING, "Need to specify at least one pool server.");
