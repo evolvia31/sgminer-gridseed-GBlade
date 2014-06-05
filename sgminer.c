@@ -204,6 +204,10 @@ static int usbres_thr_id;
 static int hotplug_thr_id;
 #endif
 static int total_control_threads;
+bool hotplug_mode;
+static int new_devices;
+static int new_threads;
+int hotplug_time = 5;
 
 #if LOCK_TRACKING
 pthread_mutex_t lockstat_lock;
