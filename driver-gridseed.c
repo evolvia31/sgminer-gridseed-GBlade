@@ -823,7 +823,6 @@ static bool gridseed_detect_one(libusb_device *dev, struct usb_find_devices *fou
 
 	cgtime(&now);
 	get_datestamp(gridseed->init, sizeof(gridseed->init), &now);
-	gridseed->algorithm = default_algorithm;
 	
 	if (!add_cgpu(gridseed))
 		goto unshin;
