@@ -1119,7 +1119,7 @@ configure:16096: checking for ./ADL_SDK/adl_sdk.h
 configure:16110: result: yes
 configure:16210: checking for library containing addstr
 configure:16241: gcc -o conftest -g -O2   conftest.c -lpthread  >&5
-/tmp/ccGMWcOs.o: In function `main':
+/tmp/ccpqHJrx.o: In function `main':
 /home/test/sgminer-gridseed-GBlade/conftest.c:95: undefined reference to `addstr'
 collect2: error: ld returned 1 exit status
 configure:16241: $? = 1
