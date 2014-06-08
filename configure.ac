@@ -2,9 +2,10 @@
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_define([v_maj], [4])
 m4_define([v_min], [2])
-m4_define([v_mic], [1_gsd-1.3])
+m4_define([v_mic], [1])
+m4_define([v_rev], [gsd_1.4])
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
-m4_define([v_ver], [v_maj.v_min.v_mic])
+m4_ifdef([v_rev], [m4_define([v_ver], [v_maj.v_min.v_mic-v_rev])], [m4_define([v_ver], [v_maj.v_min.v_mic])])
 m4_define([lt_rev], m4_eval(v_maj + v_min))
 m4_define([lt_cur], v_mic)
 m4_define([lt_age], v_min)
@@ -30,6 +31,7 @@ m4_ifdef([v_rel], , [m4_define([v_rel], [])])
 AC_DEFINE_UNQUOTED(SGMINER_MAJOR_VERSION, [v_maj], [Major version])
 AC_DEFINE_UNQUOTED(SGMINER_MINOR_VERSION, [v_min], [Minor version])
 AC_DEFINE_UNQUOTED(SGMINER_MINOR_SUBVERSION, [v_mic], [Micro version])
+AC_DEFINE_UNQUOTED(SGMINER_REVISON, [v_rev], [Revison])
 version_info="lt_rev:lt_cur:lt_age"
 release_info="v_rel"
 AC_SUBST(version_info)

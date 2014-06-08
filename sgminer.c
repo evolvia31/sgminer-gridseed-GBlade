@@ -4634,6 +4634,14 @@ void write_config(FILE *fcfg)
 		fprintf(fcfg, ",\n\"api-description\" : \"%s\"", json_escape(opt_api_description));
 	if (opt_api_groups)
 		fprintf(fcfg, ",\n\"api-groups\" : \"%s\"", json_escape(opt_api_groups));
+#ifdef USE_GRIDSEED
+	if (opt_gridseed_options)
+		fprintf(fcfg, ",\n\"gridseed-options\" : \"%s\"", json_escape(opt_gridseed_options));
+	if (opt_gridseed_freq)
+                fprintf(fcfg, ",\n\"gridseed-freq\" : \"%s\"", json_escape(opt_gridseed_freq));
+	if (opt_gridseed_chips)
+                fprintf(fcfg, ",\n\"gridseed-chips\" : \"%s\"", json_escape(opt_gridseed_chips));
+#endif
 #ifdef USE_USBUTILS
 	if (opt_usb_select)
 		fprintf(fcfg, ",\n\"usb\" : \"%s\"", json_escape(opt_usb_select));
